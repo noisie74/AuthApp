@@ -9,6 +9,11 @@ public class Contacts {
     private String lastName;
     private String email;
 
+    public Contacts(String firstName, String lastName){
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -35,6 +40,6 @@ public class Contacts {
 
     @Override
     public String toString() {
-        return String.format("%s", firstName + " " + lastName);
+        return String.format("%s", firstName + " " + lastName + " " + email);
     }
 }

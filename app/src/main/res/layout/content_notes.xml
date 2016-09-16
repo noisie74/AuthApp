@@ -17,7 +17,18 @@
         android:id="@+id/note"
         android:hint="What is on your mind?"
         android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:gravity="top"
+        android:background="@null"/>
+
+    <EditText
+        android:id="@+id/contact"
+        android:hint="What is on your mind?"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
         android:gravity="top"
         android:background="@null"
-        android:layout_height="match_parent"/>
+        android:layout_below="@+id/note"
+        android:layout_alignParentStart="true"/>
+
 </RelativeLayout>

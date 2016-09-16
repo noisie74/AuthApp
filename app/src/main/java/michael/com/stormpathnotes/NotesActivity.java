@@ -45,7 +45,7 @@ import okhttp3.Callback;
 
 public class NotesActivity extends AppCompatActivity {
 
-    EditText mNote;
+    EditText mNote, mContact;
     Context context;
     private OkHttpClient okHttpClient;
     public static final String ACTION_GET_NOTES = "notes.get";
@@ -88,7 +88,8 @@ public class NotesActivity extends AppCompatActivity {
                     Snackbar.make(view, getString(R.string.saving), Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
 
-                    saveNote();
+//                    saveNote();
+                    postData();
                 }
             });
         }
@@ -97,6 +98,23 @@ public class NotesActivity extends AppCompatActivity {
     private void setEditText() {
         mNote = (EditText) findViewById(R.id.note);
         mNote.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        mContact = (EditText) findViewById(R.id.contact);
+        mContact.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -130,6 +148,7 @@ public class NotesActivity extends AppCompatActivity {
             public void onSuccess(UserProfile userProfile) {
 //                getNotes();
                 getData();
+//                postData();
             }
 
             @Override
@@ -220,11 +239,12 @@ public class NotesActivity extends AppCompatActivity {
                 .build();
 
         okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override public
-            void onFailure(Call call, IOException e) {
+            @Override
+            public void onFailure(Call call, IOException e) {
             }
 
-            @Override public void onResponse(Call call, Response response)
+            @Override
+            public void onResponse(Call call, Response response)
                     throws IOException {
                 JSONObject mNotes;
 
@@ -254,7 +274,7 @@ public class NotesActivity extends AppCompatActivity {
             public void onResponse(retrofit2.Call<List<Contacts>> call, retrofit2.Response<List<Contacts>> response) {
 
                 List<Contacts> mContacts = response.body();
-                String noteCloud = mContacts.get(0).getFirstName().toString();
+                String noteCloud = mContacts.get(0).toString();
                 // You can also include some extra data.
                 Intent intent = new Intent(ACTION_GET_NOTES);
                 intent.putExtra("notes", noteCloud);
@@ -269,6 +289,29 @@ public class NotesActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void postData() {
+
+        ApiService.ApiCall mCall = ApiService.create();
+
+        retrofit2.Call<Contacts> makeApiCall = mCall.postObject(new Contacts(mNote.getText().toString(),
+                mContact.getText().toString()));
+
+        makeApiCall.enqueue(new retrofit2.Callback<Contacts>() {
+            @Override
+            public void onResponse(retrofit2.Call<Contacts> call, retrofit2.Response<Contacts> response) {
+                Contacts body = response.body();
+//                Log.d("POSTDATA", body.toString());
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<Contacts> call, Throwable t) {
+
+            }
+        });
+
+
     }
 
     private Headers buildStandardHeaders(String accessToken) {
