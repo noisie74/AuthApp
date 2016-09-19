@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.stormpath.sdk.Stormpath;
 import com.stormpath.sdk.StormpathCallback;
@@ -45,6 +47,7 @@ import okhttp3.Callback;
 
 public class NotesActivity extends AppCompatActivity {
 
+//    SwipeRefreshLayout swipeContainer;
     EditText mNote, mContact;
     Context context;
     private OkHttpClient okHttpClient;
@@ -58,6 +61,7 @@ public class NotesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notes);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+//        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
         context = this;
 
@@ -76,6 +80,7 @@ public class NotesActivity extends AppCompatActivity {
 
         setFabButton();
         setEditText();
+//        pullToRefresh();
 
     }
 
@@ -94,6 +99,34 @@ public class NotesActivity extends AppCompatActivity {
             });
         }
     }
+
+//    private void pullToRefresh() {
+//
+//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                IntentFilter noteGetFilter = new IntentFilter(ACTION_GET_NOTES);
+//                IntentFilter notePostFilter = new IntentFilter(ACTION_POST_NOTES);
+//
+//                LocalBroadcastManager.getInstance(NotesActivity.this).registerReceiver(onNoteReceived, noteGetFilter);
+//                LocalBroadcastManager.getInstance(NotesActivity.this).registerReceiver(onNoteReceived, notePostFilter);
+//
+//                Stormpath.getUserProfile(new StormpathCallback<UserProfile>() {
+//                    @Override
+//                    public void onSuccess(UserProfile userProfile) {
+////                getNotes();
+//                        getData();
+//                        swipeContainer.setRefreshing(false);
+//                    }
+//
+//                    @Override
+//                    public void onFailure(StormpathError error) {
+//                        // Show login view
+//                        startActivity(new Intent(context, StormpathLoginActivity.class));
+//                    }
+//                });            }
+//        });
+//    }
 
     private void setEditText() {
         mNote = (EditText) findViewById(R.id.note);
@@ -188,8 +221,33 @@ public class NotesActivity extends AppCompatActivity {
 
             return true;
         }
+        if (id == R.id.action_delete){
+
+            deleteContact();
+            Toast.makeText(this, "Contact Deleted!", Toast.LENGTH_SHORT).show();
+        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteContact(){
+
+        ApiService.ApiCall mCall = ApiService.create();
+
+
+        retrofit2.Call<Contacts> makeApiCall = mCall.deleteContact("57db897933b1b30011de5c4a");
+        makeApiCall.enqueue(new retrofit2.Callback<Contacts>() {
+            @Override
+            public void onResponse(retrofit2.Call<Contacts> call, retrofit2.Response<Contacts> response) {
+
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<Contacts> call, Throwable t) {
+
+                t.getMessage();
+            }
+        });
     }
 
     private BroadcastReceiver onNoteReceived = new BroadcastReceiver() {
@@ -275,6 +333,7 @@ public class NotesActivity extends AppCompatActivity {
 
                 List<Contacts> mContacts = response.body();
                 String noteCloud = mContacts.get(0).toString();
+                Log.d("ACTIVITY", noteCloud);
                 // You can also include some extra data.
                 Intent intent = new Intent(ACTION_GET_NOTES);
                 intent.putExtra("notes", noteCloud);

@@ -6,4 +6,8 @@
           android:title="@string/action_logout"
           android:orderInCategory="100"
           app:showAsAction="never"/>
+    <item android:id="@+id/action_delete"
+          android:title="delete"
+          android:orderInCategory="200"
+          app:showAsAction="never"/>
 </menu>
